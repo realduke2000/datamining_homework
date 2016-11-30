@@ -55,11 +55,11 @@ def clean_info(info_file):
                         new_data.append(ename)
                     elif i == 4:
                         heigh = data[i]
-                        new_heigh = data[i][:data[i].index('米')-1] #米
+                        new_heigh = data[i][:data[i].index('米')] #米
                         new_data.append(new_heigh)
                     elif i == 6:
                         weight = data[i]
-                        new_weight = data[i][:data[i].index('公斤')-1] #公斤
+                        new_weight = data[i][:data[i].index('公斤')] #公斤
                         new_data.append(new_weight)
                     elif i == 7:
                         dt = datetime.datetime.strptime(data[i], "%Y-%m-%d")
@@ -68,7 +68,7 @@ def clean_info(info_file):
                     elif i == 12:
                         salary = data[i].strip()
                         if salary:
-                            new_salary = data[i][:data[i].index('万美元')-1].strip() #万美元
+                            new_salary = data[i][:data[i].index('万美元')].strip() #万美元
                             if new_salary:
                                 new_data.append(new_salary)
                             else:

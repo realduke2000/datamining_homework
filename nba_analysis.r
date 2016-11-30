@@ -9,5 +9,6 @@ mini_info <- info[,c(5,7,8,13,15,16)]
 
 #data=merge(info,chgui, by.x = 'ID', by.y = 'ID')
 
-cl = kmeans(mini_info, 2)
+cl = kmeans(mini_info, 10)
 
+plot(mini_info, col=cl$cluster)
