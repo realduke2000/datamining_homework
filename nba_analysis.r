@@ -1,6 +1,13 @@
 
-info<-read.csv("/Users/houhualong/Developer/src/bigdata/nba/nba_info_clean.txt",sep = '|')
-#jihou<-read.csv("/Users/houhualong/Developer/src/bigdata/nba/nba_jihou.txt",sep = '|')
-chgui<-read.csv("/Users/houhualong/Developer/src/bigdata/nba/nba_chgui_clean.txt",sep = '|')
 
-data=merge(info,chgui, by.x = 'ID', by.y = 'ID')
+dir = "/home/allenh/src/github/datamining_homework"
+
+info<-read.csv(stringr::str_c(dir, "/nba_info_utf8.txt.clean"),sep = '|')
+mini_info <- info[,c(5,7,8,13,15,16)]
+#jihou<-read.csv(stringr::str_c(dir, "/nba_jihou.txt"),sep = '|')
+#chgui<-read.csv(stringr::str_c(dir, "/nba_chgui_clean.txt"),sep = '|')
+
+#data=merge(info,chgui, by.x = 'ID', by.y = 'ID')
+
+cl = kmeans(mini_info, 2)
+
