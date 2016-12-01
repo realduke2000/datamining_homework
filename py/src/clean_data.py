@@ -14,10 +14,25 @@ def print_gbk_str(file_path):
             sys.stdout.write(line.decode('gb2312'))
 
 
-def clean_chgui(race_file):
-    title_race = 'ID|name|season|team|changci|shoufa|time|toulan_chusou|toulan_mingzhong|mingzhonglv|3fen_chushou|3fen_mingzhong|3fenmingzhong|faqiu_total|faqiu_mingzhong|faqiu_mingzhonglv|lanban|zhugong|qiangduan|gaimao|shiwu|fangui|defen'
-    with open('%s.clean' % race_file, mode='w') as new_chgui:
-        with open(race_file, mode='r') as orig_chgui:
+def clean_chgui(race_file_path, new_file_path):
+    """
+    before:
+    0: ID	1: name	2: 赛季	3: 球队	4: 场次	5: 首发
+    6: 时间(1997-2013?)	7: 投篮	8: 命中率	9: 三分	10: 命中率
+    11: 罚球	12: 命中率	13: 篮板	14: 助攻	15: 抢断
+    16: 盖帽	17: 失误	18: 犯规	19: 得分
+    after:
+    0: ID	1: name	2: 赛季	3: 球队	4: 场次	5: 首发
+    6: 时间	7: 投篮命中	8: 投篮出手	9: 命中率	10: 三分命中
+    11: 三分得手	12: 命中率	13: 罚球命中	14: 罚球出手	15: 命中率
+    16: 篮板	17: 助攻	18: 抢断	19: 盖帽	20: 失误
+    21: 犯规	22: 得分
+    :param race_file_path:
+    :return:
+    """
+    title_race = 'ID|name|season|team|changci|shoufa|time|toulan_mingzhong|toulan_chusou|mingzhonglv|3fen_mingzhong|3fen_chushou|3fenmingzhonglv|faqiu_mingzhong|faqiu_chushou|faqiu_mingzhonglv|lanban|zhugong|qiangduan|gaimao|shiwu|fangui|defen'
+    with open(new_file_path, mode='w') as new_chgui:
+        with open(race_file_path, mode='r') as orig_chgui:
             new_chgui.write(title_race + os.linesep)
             orig_chgui.readline()
             for line in orig_chgui:
@@ -28,7 +43,9 @@ def clean_chgui(race_file):
                         name = data[i]
                         ename = name[name.index('(')+1:name.index(')')-1]
                         new_data.append(ename)
-                    elif i == 7 or i == 9 or i == 11:
+                    elif i in (7, 9, 11):
+                        # important data, * 100
+                        # 命中/出手
                         chushou_mingzhong = data[i].split('-')
                         chushou = chushou_mingzhong[0]
                         mingzhong = chushou_mingzhong[1]
@@ -39,10 +56,17 @@ def clean_chgui(race_file):
                 new_chgui.write("|".join(new_data))
 
 
-def clean_info(info_file):
+def clean_info(info_file_path, new_file_path):
+    """
+    0: ID	1: name	2: 个人网址	3: 个人头像	4: 身高	5: 位置
+    6: 体重	7: 生日	8: 球队	9: 学校	10: 选秀
+    11: 出生地	12: 本赛季薪金	13: 合同	14: 常规赛参加情况	15: 季后赛参加情况
+    :param info_file_path:
+    :return:
+    """
     title_info = 'ID|name|website|profile|heigh|position|weight|birth|team|school|xuanxiu|born|salary|contract|regular race|season race'
-    with open('%s.clean' % info_file,mode='w') as new_info:
-        with open(info_file) as orig_info:
+    with open(new_file_path, mode='w') as new_info:
+        with open(info_file_path) as orig_info:
             new_info.write(title_info + os.linesep)
             orig_info.readline()
             for line in orig_info:
@@ -54,18 +78,22 @@ def clean_info(info_file):
                         ename = name[name.index('(')+1:name.index(')')-1]
                         new_data.append(ename)
                     elif i == 4:
+                        # using meter
                         heigh = data[i]
                         new_heigh = data[i][:data[i].index('米')] #米
                         new_data.append(new_heigh)
                     elif i == 6:
+                        # using kg
                         weight = data[i]
                         new_weight = data[i][:data[i].index('公斤')] #公斤
                         new_data.append(new_weight)
                     elif i == 7:
+                        # convert birth to month
                         dt = datetime.datetime.strptime(data[i], "%Y-%m-%d")
-                        new_birth = time.mktime(dt.timetuple())
+                        new_birth = (datetime.datetime.now().year - dt.year) * 12 + (datetime.datetime.now().month - dt.month)
                         new_data.append(str(new_birth))
                     elif i == 12:
+                        # using x*10k dollar per year
                         salary = data[i].strip()
                         if salary:
                             new_salary = data[i][:data[i].index('万美元')].strip() #万美元
@@ -73,7 +101,6 @@ def clean_info(info_file):
                                 new_data.append(new_salary)
                             else:
                                 new_data.append('0')
-
                         else:
                             new_data.append('0')
                     else:
@@ -86,13 +113,16 @@ def main():
     parser.add_argument("--printgbk", help="print gpk encoding file")
     parser.add_argument("--race_file", help="clean jihou file")
     parser.add_argument("--info_file", help="clean changgui file")
+    parser.add_argument("--new_file", help="write data to new file")
     args = parser.parse_args()
     if args.printgbk:
         print_gbk_str(args.printgbk)
-    elif args.race_file:
-        clean_chgui(args.race_file)
-    elif args.info_file:
-        clean_info(args.info_file)
+    elif args.race_file and args.new_file:
+        clean_chgui(args.race_file, args.new_file)
+    elif args.info_file and args.new_file:
+        clean_info(args.info_file, args.new_file)
+    else:
+        parser.print_usage()
 
 
 if __name__ == "__main__":
