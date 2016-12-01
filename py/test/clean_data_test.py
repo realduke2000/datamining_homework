@@ -30,5 +30,26 @@ class Test(TestCase):
             if i and i % 5 == 0:
                 sys.stdout.write(os.linesep)
 
+    def test_team_salary(self):
+        f = open('../../resources/nba_info_utf8.txt')
+        info_map = {}
+        f.readline()
+        # 12 - salary, 8 - team
+        for line in f:
+            data = line.split('|')
+            if not data[12]:
+                continue
+            data[12] = data[12].strip().strip("万美元")
+            if not data[8]:
+                continue
+            if data[8] in info_map:
+                info_map[data[8]] = (info_map[data[8]][0] + 1, info_map[data[8]][1] + int(data[12]))
+            else:
+                info_map[data[8]] = (1, int(data[12]))
+        for k in info_map:
+            print(k)
+            print(str(info_map[k][1]/info_map[k][0]))
+            print
+
 if __name__ == '__main__':
     unittest.main()

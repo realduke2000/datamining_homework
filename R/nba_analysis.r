@@ -42,8 +42,11 @@ cluster_chgui_race <-function()
 {
   new_chgui <- chgui[which(chgui[,3]==2013),]
   new_data <- merge(new_chgui, info, by.x = "ID", by.y = "ID")
-  new_data <- new_data[,c(8,11,12,14,15,17:23,30,35)]
+  new_data <- new_data[,c(8,11,14,17:22)]
   new_data <- na.omit(new_data)
   cl = kmeans(new_data, 5)
   plot(new_data, col=cl$cluster)
+  #A[order(A[,4],decreasing=T),] ＃按照第4列降序排序
+  #失误，三分，助攻
+  
 }
