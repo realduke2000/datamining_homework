@@ -48,5 +48,23 @@ cluster_chgui_race <-function()
   plot(new_data, col=cl$cluster)
   #A[order(A[,4],decreasing=T),] ＃按照第4列降序排序
   #失误，三分，助攻
+}
+
+
+svm_player <- function()
+{
+  library(e1071)
+  library(rpart)
+  library(mlbench)
+  
+  cg_player<-sqldf("select * from info where position = 'C' or position = 'G' or position = 'SG' or position = 'PG'")
+  new_chgui <- chgui[which(chgui[,3]==2013),]
+  cg_data <- merge(new_chgui, cg_player, by.x = "ID", by.y = "ID")
+  train_data <- cg_data[,c(11,12,17,19,20,22,27,29)]
+  cl = kmeans(train_data, 2)
+  plot(train_data, col=cl$cluster)
+  svm.model = svm(churn ~ ., data = train_data, cost = 100, gamma = 2)
   
 }
+
+

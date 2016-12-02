@@ -82,6 +82,9 @@ def clean_info(info_file_path, new_file_path):
                         heigh = data[i]
                         new_heigh = data[i][:data[i].index('米')] #米
                         new_data.append(new_heigh)
+                    elif i == 5:
+                        pos = data[i][:data[i].index('(')] #F/C(33号)
+                        new_data.append(pos)
                     elif i == 6:
                         # using kg
                         weight = data[i]
@@ -106,6 +109,63 @@ def clean_info(info_file_path, new_file_path):
                     else:
                         new_data.append(data[i])
                 new_info.write("|".join(new_data))
+
+
+def parse_info(info_file):
+    # 0: ID	1: name	2: 个人网址	3: 个人头像	4: 身高	5: 位置
+    # 6: 体重	7: 生日	8: 球队	9: 学校	10: 选秀
+    # 11: 出生地	12: 本赛季薪金	13: 合同	14: 常规赛参加情况	15: 季后赛参加情况
+    f = open(info_file)
+    f.readline()
+    info = {}
+    for line in f:
+        fields = line.split('|')
+        fields[5] = fields[5][:fields[5].index('(')] # PG(8号)
+        info[fields[0]] = fields[1:]
+    return info
+
+
+def try_convert_int(s):
+    """
+    try convert s to int, if failed, return s itself
+    :param s:
+    :return:
+    """
+    new_obj = s
+    try:
+        if s.strip().index('%'):
+            new_obj = s.strip('% ')
+        new_obj = int(s)
+    except:
+        new_obj = s
+    return new_obj
+
+def merge_race_info_by_id(race_file):
+    # 0: ID	1: name	2: 赛季	3: 球队	4: 场次	5: 首发
+    # 6: 时间	7: 投篮命中	8: 投篮出手	9: 命中率	10: 三分命中
+    # 11: 三分得手	12: 命中率	13: 罚球命中	14: 罚球出手	15: 命中率
+    # 16: 篮板	17: 助攻	18: 抢断	19: 盖帽	20: 失误
+    # 21: 犯规	22: 得分
+    #10001|Tony Parke|2001|马刺|77|72|29.4|3.5|8.3|41.9%|0.8|2.5|32.3%|1.4|2.1|67.5%|2.6|4.3|1.16|0.09|1.96|2.16|9.2
+    f = open(race_file)
+    f.readline()
+    race_info = {}
+    for line in f:
+        try:
+            fields = line.split("|")
+            id = fields[0]
+            first_race_info = False
+            if id in race_info:
+                first_race_info = True
+            num_fields = map(try_convert_int, fields[4:])
+            num_fields.insert(0, fields[3])
+            num_fields.insert(0, fields[2])
+            num_fields.insert(0, fields[1])
+        except:
+            print("error while parsing: " + line)
+            raise
+
+
 
 
 def main():

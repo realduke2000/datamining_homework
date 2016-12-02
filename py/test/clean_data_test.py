@@ -43,13 +43,27 @@ class Test(TestCase):
             if not data[8]:
                 continue
             if data[8] in info_map:
-                info_map[data[8]] = (info_map[data[8]][0] + 1, info_map[data[8]][1] + int(data[12]))
+                info_map[data[8]] = (info_map[data[8]][0] + 1, info_map[data[8]][1] + int(data[12])) # sum
             else:
                 info_map[data[8]] = (1, int(data[12]))
         for k in info_map:
             print(k)
-            print(str(info_map[k][1]/info_map[k][0]))
+            print(str(info_map[k][1]/info_map[k][0])) # ave
             print
+
+    def test_group_positio(self):
+        f = open('../../resources/nba_info_utf8.txt')
+        f.readline()
+        position_info = {}
+        for line in f:
+            data = line.split("|")
+            pos = data[5][:data[5].index('(')]
+            if pos in position_info:
+                position_info[pos] += 1
+            else:
+                position_info[pos] = 0
+        for k in position_info:
+            print("%s:%s"%(str(k),str(position_info[k])))
 
 if __name__ == '__main__':
     unittest.main()
