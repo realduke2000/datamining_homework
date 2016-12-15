@@ -1,6 +1,6 @@
 
-#dir = "/home/allenh/src/github/datamining_homework"
-dir = "/Users/houhualong/Developer/src/bigdata/nba"
+dir = "/home/allenh/src/github/datamining_homework"
+#dir = "/Users/houhualong/Developer/src/bigdata/nba"
 
 info<-read.csv(stringr::str_c(dir, "/resources/nba_info.clean.txt"),sep = '|')
 jihou<-read.csv(stringr::str_c(dir, "/resources/nba_jihou.clean.txt"),sep = '|')
@@ -56,15 +56,20 @@ svm_player <- function()
   library(e1071)
   library(rpart)
   library(mlbench)
+  library(sqldf)
   
-  cg_player<-sqldf("select * from info where position = 'C' or position = 'G' or position = 'SG' or position = 'PG'")
-  new_chgui <- chgui[which(chgui[,3]==2013),]
-  cg_data <- merge(new_chgui, cg_player, by.x = "ID", by.y = "ID")
-  train_data <- cg_data[,c(11,12,17,19,20,22,27,29)]
-  cl = kmeans(train_data, 2)
-  plot(train_data, col=cl$cluster)
-  svm.model = svm(churn ~ ., data = train_data, cost = 100, gamma = 2)
-  
+
+  all_data <- merge(info, chgui, by.x="ID", by.y="ID")
+  test_data <- all_data[,c('heigh', 'weight', 'X3fen_mingzhong','X3fen_chushou','lanban','zhugong','qiangduan','gaimao')]
+  train_data <- cg_data[,c('heigh', 'weight', 'X3fen_mingzhong','X3fen_chushou','lanban','zhugong','qiangduan','gaimao')]
+  cg_data <- subset(all_data, position=='C' | position=='G' | position=='SG' | position=='PG' & changci > 10)
+  cg_data$position[cg_data$position=='PG'] <- 'G'
+  cg_data$position[cg_data$position=='SG'] <- 'G'
+  svmfit <- svm(cg_data$position ~ ., data=train_data, kernel = 'radial', cost = 10, scale = FALSE)
+  print(svmfit)
+  pred = predict(svmfit, test_data)
+ 
+  compareTable <- table(all_data$position, predict(svmfit, test_data)) 
 }
 
 
