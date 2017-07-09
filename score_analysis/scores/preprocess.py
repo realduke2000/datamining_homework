@@ -23,7 +23,7 @@ def assert_full_filled(csv):
         if len(csv[csv.keys()[i]]) == 0:
             csv[csv.keys()[i]] = ["" for r in range(row_len)]
         assert row_len == len(csv.values()[i]), "%s,%s:%s" % (
-        str(csv["date"][0]), str(len(csv.values()[0])), str(len(csv.values()[i])))
+            str(csv["date"][0]), str(len(csv.values()[0])), str(len(csv.values()[i])))
 
 
 def get_all_csv():
@@ -83,14 +83,53 @@ def convert_to_csv_str(csv):
     return csv_str
 
 
-def main():
+def create_csv():
     all_csv = get_all_csv()
     csv_str = convert_to_csv_str(all_csv)
-    filepath = '/Users/houhualong/Developer/src/R/score-analysis/scores/scores.csv'
+    filepath = '/Users/houhualong/Developer/src/github/datamining_homework/score_analysis/scores/scores.csv'
     if os.path.exists(filepath):
         os.remove(filepath)
     f = open(filepath, 'w')
     f.write(csv_str)
+
+
+def write_id():
+    filepath = '/Users/houhualong/Developer/src/github/datamining_homework/score_analysis/scores/scores.orig.csv'
+    newfilepath = '/Users/houhualong/Developer/src/github/datamining_homework/score_analysis/scores/scores.csv'
+    with open(filepath) as f:
+        f.readline()  # skip header
+        nameid = {}
+        for line in f.readlines():
+            fields = line.split(',')
+            if (fields[1] in nameid) and (nameid[fields[1]] is not None and nameid[fields[1]] != ""):
+                continue
+            nameid[fields[1]] = fields[8]  # name=id
+
+        f.seek(0)
+        if os.path.exists(newfilepath):
+            os.remove(newfilepath)
+        with open(newfilepath, 'w') as newfile:
+            newfile.write(f.readline())  # write header line
+            for line in f.readlines():
+                orig_fields = [field.strip() for field in line.split(',')]
+                orig_fields[8] = nameid[orig_fields[1]]
+                newline = ",".join(orig_fields) + "\n"
+                newfile.write(newline)
+
+
+def testid():
+    filepath = '/Users/houhualong/Developer/src/github/datamining_homework/score_analysis/scores/scores.csv'
+    with open(filepath) as f:
+        f.readline()
+        idname = {}
+        for line in f.readlines():
+            fields = [field.strip() for field in line.split(',')]
+            if fields[8] in idname:
+                assert idname[fields[8]] == fields[1], "%s!=%s" % (idname[fields[8]], fields[1])
+
+
+def main():
+    testid()
 
 
 if __name__ == "__main__":

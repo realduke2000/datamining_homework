@@ -1,6 +1,5 @@
 merge_data <- function(filename, ncols) {
   library(readr)
-  setwd('~/Developer/src/R/score-analysis')
   scores <- read_delim(
     paste("./scores/csv/", filename, sep = ""),
     "\t",
@@ -15,4 +14,5 @@ merge_data <- function(filename, ncols) {
   return(scores)
 }
 
+setwd('~/Developer/src/R/score_analysis')
 data <- read.csv(file = "./scores/scores.csv")
