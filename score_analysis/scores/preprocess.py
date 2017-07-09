@@ -35,8 +35,9 @@ def get_all_csv():
             score_type = filename.split('.')[2]
             score_date = "-".join(filename.split('.')[0:2]) + "-01"
             csv_data = read_csv_file(filepath, cols)
-            csv_data['type'] = [score_type for k in csv_data.values()[0]]
-            csv_data['date'] = [score_date for k in csv_data.values()[0]]
+            row_len = len(csv_data['name'])
+            csv_data['type'] = [score_type for k in range(row_len)]
+            csv_data['date'] = [score_date for k in range(row_len)]
             assert_full_filled(csv_data)
             csv_list.append(csv_data)
     return merge_csv(csv_list)
@@ -86,7 +87,7 @@ def convert_to_csv_str(csv):
 def create_csv():
     all_csv = get_all_csv()
     csv_str = convert_to_csv_str(all_csv)
-    filepath = '/Users/houhualong/Developer/src/github/datamining_homework/score_analysis/scores/scores.csv'
+    filepath = '/Users/houhualong/Developer/src/github/datamining_homework/score_analysis/scores/scores.noid.csv'
     if os.path.exists(filepath):
         os.remove(filepath)
     f = open(filepath, 'w')
@@ -94,7 +95,7 @@ def create_csv():
 
 
 def write_id():
-    filepath = '/Users/houhualong/Developer/src/github/datamining_homework/score_analysis/scores/scores.orig.csv'
+    filepath = '/Users/houhualong/Developer/src/github/datamining_homework/score_analysis/scores/scores.noid.csv'
     newfilepath = '/Users/houhualong/Developer/src/github/datamining_homework/score_analysis/scores/scores.csv'
     with open(filepath) as f:
         f.readline()  # skip header
@@ -129,6 +130,8 @@ def testid():
 
 
 def main():
+    create_csv()
+    write_id()
     testid()
 
 
