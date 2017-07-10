@@ -1,8 +1,8 @@
 library(readr)
 library(reshape)
 library(sqldf)
-#setwd('/home/allenh/src/github/datamining_homework/score_analysis')
-setwd('~/Developer/src/github/datamining_homework/score_analysis')
+setwd('/home/allenh/src/github/datamining_homework/score_analysis')
+#setwd('~/Developer/src/github/datamining_homework/score_analysis')
 
 merge_data <- function(filename, ncols) {
   scores <- read_delim(
@@ -122,6 +122,7 @@ range_sort <- function(data, stuid) {
   }
   stuindexes <- stuindexes[order(stuindexes$date), ]
   stu_name = stuindexes[1,c('name')]
+  png(filename = paste("rank_trend",stu_name,".png"))
   opar <- par(no.readonly = TRUE)
   plot(
     xlab = "Date",
@@ -139,6 +140,7 @@ range_sort <- function(data, stuid) {
   axis(side = 2)
   title(stu_name)
   par(opar)
+  dev.off()
 }
 create_all_rank_trend <- function(){
   ids <- sqldf("select distinct id from data")
@@ -147,4 +149,5 @@ create_all_rank_trend <- function(){
     range_sort(data, curr_id)
   }
 }
+
 create_all_rank_trend()
