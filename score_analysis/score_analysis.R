@@ -1,5 +1,9 @@
+library(readr)
+library(reshape)
+setwd('/home/allenh/src/github/datamining_homework/score_analysis')
+
 merge_data <- function(filename, ncols) {
-  library(readr)
+  
   scores <- read_delim(
     paste("./scores/csv/", filename, sep = ""),
     "\t",
@@ -14,10 +18,10 @@ merge_data <- function(filename, ncols) {
   return(scores)
 }
 
-library(readr)
+
 data <-
   read_csv(
-    "~/Developer/src/R/score_analysis/scores/scores.csv",
+    "scores/scores.csv",
     col_types = cols(
       Biology = col_integer(),
       Geo = col_integer(),
@@ -37,14 +41,23 @@ summary(data)
 draw_lm <- function(data, stuid) {
   sample_students <- subset(data, id == stuid)
   sample_students <- sample_students[order(sample_students$date),]
+  
   attach(sample_students)
+  par(mfrow=c(2,2))
   
-  plot(range(as.Date('2015-06-01'),as.Date('2018-01-01')),range(0,100),type='n', xlab = "Date", ylab="Scores")
-  
+  plot(range(as.Date('2015-06-01'),as.Date('2018-01-01')),range(0,100),type='n', xlab = "Date", ylab="Math")
   lines(date, Math, type='b', col='red')
+  
+  plot(range(as.Date('2015-06-01'),as.Date('2018-01-01')),range(0,100),type='n', xlab = "Date", ylab="Chinese")
   lines(date, Chinese, type='b', col='blue')
+  
+  plot(range(as.Date('2015-06-01'),as.Date('2018-01-01')),range(0,100),type='n', xlab = "Date", ylab="English")
   lines(date, English, type='b')
   
+  plot(range(as.Date('2015-06-01'),as.Date('2018-01-01')),range(0,100),type='n', xlab = "Date", ylab="Scores")
+  lines(date, Math, type='p', col='red')
+  lines(date, Chinese, type='p', col='blue')
+  lines(date, English, type='p')
   detach(sample_students)
 }
 
