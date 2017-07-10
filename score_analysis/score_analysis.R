@@ -1,5 +1,6 @@
 library(readr)
 library(reshape)
+library(sqldf)
 #setwd('/home/allenh/src/github/datamining_homework/score_analysis')
 setwd('~/Developer/src/github/datamining_homework/score_analysis')
 
@@ -106,7 +107,7 @@ range_sort <- function(data, stuid) {
   new_data <-
     transform(new_data, Score = new_data$Chinese + new_data$Math + new_data$English)
   dates <- sqldf("select distinct(date) from new_data")
-  stu_name = new_data[1,c('name')]
+  
   stuindexes = new_data[0, c('id', 'name', 'date', 'Score')]
   for (i in 1:nrow(dates)) {
     curr_exam = dates[i, ]
@@ -120,6 +121,7 @@ range_sort <- function(data, stuid) {
     stuindexes <- rbind(stuindexes, stuindex)
   }
   stuindexes <- stuindexes[order(stuindexes$date), ]
+  stu_name = stuindexes[1,c('name')]
   opar <- par(no.readonly = TRUE)
   plot(
     xlab = "Date",
@@ -128,7 +130,7 @@ range_sort <- function(data, stuid) {
     y=stuindexes$index,
     type = 'b',
     axes=FALSE,
-    ylim = c(100,1),
+    ylim = c(100,1)
   )
   #lines(stuindexes$date, stuindexes$index, type = 'b')
   text(stuindexes$date, stuindexes$index + 3, stuindexes$index, cex = 0.8)
@@ -138,5 +140,11 @@ range_sort <- function(data, stuid) {
   title(stu_name)
   par(opar)
 }
-
-range_sort(data, 920150425)
+create_all_rank_trend <- function(){
+  ids <- sqldf("select distinct id from data")
+  for (i in 1:nrow(ids)){
+    curr_id = ids[i,]
+    range_sort(data, curr_id)
+  }
+}
+create_all_rank_trend()
