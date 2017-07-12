@@ -1,5 +1,5 @@
 
-dir = "/home/allenh/src/github/datamining_homework"
+dir = "/home/allenh/src/github/datamining_homework/nba_analysis"
 #dir = "/Users/houhualong/Developer/src/bigdata/nba"
 
 info<-read.csv(stringr::str_c(dir, "/resources/nba_info.clean.txt"),sep = '|')
@@ -61,8 +61,8 @@ svm_player <- function()
 
   all_data <- merge(info, chgui, by.x="ID", by.y="ID")
   test_data <- all_data[,c('heigh', 'weight', 'X3fen_mingzhong','X3fen_chushou','lanban','zhugong','qiangduan','gaimao')]
-  train_data <- cg_data[,c('heigh', 'weight', 'X3fen_mingzhong','X3fen_chushou','lanban','zhugong','qiangduan','gaimao')]
   cg_data <- subset(all_data, position=='C' | position=='G' | position=='SG' | position=='PG' & changci > 10)
+  train_data <- cg_data[,c('heigh', 'weight', 'X3fen_mingzhong','X3fen_chushou','lanban','zhugong','qiangduan','gaimao')]
   cg_data$position[cg_data$position=='PG'] <- 'G'
   cg_data$position[cg_data$position=='SG'] <- 'G'
   svmfit <- svm(cg_data$position ~ ., data=train_data, kernel = 'radial', cost = 10, scale = FALSE)

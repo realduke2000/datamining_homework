@@ -142,6 +142,7 @@ range_sort <- function(data, stuid) {
   par(opar)
   dev.off()
 }
+
 create_all_rank_trend <- function(){
   ids <- sqldf("select distinct id from data")
   for (i in 1:nrow(ids)){
