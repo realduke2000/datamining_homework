@@ -1,9 +1,10 @@
 library(readr)
 library(reshape)
 library(sqldf)
+library(psych)
 
-setwd('/home/allenh/src/github/datamining_homework/')
-#setwd('/Users/houhualong/Developer/src/github/datamining_homework')
+#setwd('/home/allenh/src/github/datamining_homework/')
+setwd('/Users/houhualong/Developer/src/github/datamining_homework')
 
 select.feature <- function(data) {
   featured.data <-
@@ -36,6 +37,8 @@ player.cluster <- function() {
   players <- rbind(alb.features, brz.features)
   players <- na.omit(players)
   kmeans.model <- kmeans(players[, c(-1,-2)], 2)
+  par(mfrow=c(1,1))
+  
   plot(players[, c('Nationality')], col = kmeans.model$cluster)
   #plot(players[, c('LongPass', 'Nationality')], col = kmeans.model$cluster)
 }
@@ -54,8 +57,6 @@ player.means <- function() {
   alb.features <- na.omit(alb.features)
   alb.features$Nationality <- 'Albania'
   brz.features <- na.omit(brz.features)
-  #brz.means = apply(brz.features[, c(-1, -2)], MARGIN = 2, mean)
-  #alb.means = apply(alb.features[, c(-1, -2)], MARGIN = 2, mean)
   features <- rbind(alb.features, brz.features)
   
   means <-
@@ -86,8 +87,8 @@ player.means <- function() {
   
   alb.var <- apply(alb.features[,c(-1,-2)], MARGIN = 1, FUN = var)
   brz.var <- apply(brz.features[,c(-1,-2)], MARGIN = 1, FUN = var)
-  summary(alb.var)
-  summary(brz.var)
+  print(mean(alb.var))
+  print(mean(brz.var))
 }
 
 player.means()
