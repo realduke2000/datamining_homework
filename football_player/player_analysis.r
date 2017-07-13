@@ -2,8 +2,8 @@ library(readr)
 library(reshape)
 library(sqldf)
 
-#setwd('/home/allenh/src/github/datamining_homework/')
-setwd('/Users/houhualong/Developer/src/github/datamining_homework')
+setwd('/home/allenh/src/github/datamining_homework/')
+#setwd('/Users/houhualong/Developer/src/github/datamining_homework')
 
 select.feature <- function(data) {
   featured.data <-
@@ -35,50 +35,59 @@ player.cluster <- function() {
   brz.features <- select.feature(brz)
   players <- rbind(alb.features, brz.features)
   players <- na.omit(players)
-  kmeans.model <- kmeans(players[, c(-1, -2)], 2)
+  kmeans.model <- kmeans(players[, c(-1,-2)], 2)
   plot(players[, c('Nationality')], col = kmeans.model$cluster)
+  #plot(players[, c('LongPass', 'Nationality')], col = kmeans.model$cluster)
 }
 
 #
 # from player capabilities clustering, we can observe that the player of Brazil
 # is obviously better that Albania(Algeria)
 #
-#player.cluster()
+player.cluster()
 
-#copmare.capability <- function() {
-alb <- read.csv('football_player/Albania.csv')
-brz <- read.csv('football_player/brazil.csv')
-alb.features <- select.feature(alb)
-brz.features <- select.feature(brz)
-alb.features <- na.omit(alb.features)
-alb.features$Nationality <- 'Albania'
-brz.features <- na.omit(brz.features)
-#brz.means = apply(brz.features[, c(-1, -2)], MARGIN = 2, mean)
-#alb.means = apply(alb.features[, c(-1, -2)], MARGIN = 2, mean)
-features <- rbind(alb.features, brz.features)
+player.means <- function() {
+  alb <- read.csv('football_player/Albania.csv')
+  brz <- read.csv('football_player/brazil.csv')
+  alb.features <- select.feature(alb)
+  brz.features <- select.feature(brz)
+  alb.features <- na.omit(alb.features)
+  alb.features$Nationality <- 'Albania'
+  brz.features <- na.omit(brz.features)
+  #brz.means = apply(brz.features[, c(-1, -2)], MARGIN = 2, mean)
+  #alb.means = apply(alb.features[, c(-1, -2)], MARGIN = 2, mean)
+  features <- rbind(alb.features, brz.features)
+  
+  means <-
+    aggregate(features,
+              by = list(features$Nationality),
+              FUN = mean)
+  par(mfrow = c(2, 3))
+  barplot(means$Attack,
+          names.arg = means$Group.1,
+          ylab = 'Attack')
+  barplot(means$Defend,
+          names.arg = means$Group.1,
+          ylab = 'Defend')
+  barplot(means$Speed,
+          names.arg = means$Group.1,
+          ylab = 'Speed')
+  barplot(means$Reaction,
+          names.arg = means$Group.1,
+          ylab = 'Reaction')
+  
+  barplot(means$Reaction,
+          names.arg = means$Group.1,
+          ylab = 'Marking.')
+  
+  barplot(means$Reaction,
+          names.arg = means$Group.1,
+          ylab = 'Technique')
+  
+  alb.var <- apply(alb.features[,c(-1,-2)], MARGIN = 1, FUN = var)
+  brz.var <- apply(brz.features[,c(-1,-2)], MARGIN = 1, FUN = var)
+  summary(alb.var)
+  summary(brz.var)
+}
 
-means <- aggregate(features, by=list(features$Nationality), FUN=mean)
-means
-
-par(mfrow = c(2, 2))
-barplot(
-  means$Attack,
-  names.arg = means$Group.1,
-  ylab = 'Attack'
-)
-barplot(
-  means$Defend,
-  names.arg = means$Group.1,
-  ylab = 'Defend'
-)
-barplot(
-  means$Speed,
-  names.arg = means$Group.1,
-  ylab = 'Speed'
-)
-barplot(
-  means$Reaction,
-  names.arg = means$Group.1,
-  ylab = 'Reaction'
-)
-#}
+player.means()
